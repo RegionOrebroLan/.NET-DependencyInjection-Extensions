@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RegionOrebroLan.DependencyInjection;
 
-namespace RegionOrebroLan.DependencyInjection.UnitTests
+namespace UnitTests
 {
 	[TestClass]
 	public class ServiceConfigurationAttributeTest

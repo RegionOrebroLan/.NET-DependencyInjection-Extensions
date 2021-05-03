@@ -2,8 +2,9 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RegionOrebroLan.DependencyInjection;
 
-namespace RegionOrebroLan.DependencyInjection.IntegrationTests
+namespace IntegrationTests
 {
 	[TestClass]
 	public class ServiceConfigurationScannerTest

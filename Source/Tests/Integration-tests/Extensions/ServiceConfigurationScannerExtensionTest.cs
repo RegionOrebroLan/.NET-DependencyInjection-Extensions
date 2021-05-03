@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.DependencyInjection.Extensions;
 using TheSecond.Assembly;
 
-namespace RegionOrebroLan.DependencyInjection.IntegrationTests.Extensions
+namespace IntegrationTests.Extensions
 {
 	[TestClass]
 	public class ServiceConfigurationScannerExtensionTest

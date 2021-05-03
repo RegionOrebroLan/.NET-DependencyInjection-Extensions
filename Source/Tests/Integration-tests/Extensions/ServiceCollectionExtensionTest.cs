@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RegionOrebroLan.DependencyInjection.Extensions;
 
-namespace RegionOrebroLan.DependencyInjection.IntegrationTests.Extensions
+namespace IntegrationTests.Extensions
 {
 	[TestClass]
 	public class ServiceCollectionExtensionTest

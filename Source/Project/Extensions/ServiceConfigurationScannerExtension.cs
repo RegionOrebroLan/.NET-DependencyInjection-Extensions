@@ -41,7 +41,7 @@ namespace RegionOrebroLan.DependencyInjection.Extensions
 			if(serviceConfigurationScanner == null)
 				throw new ArgumentNullException(nameof(serviceConfigurationScanner));
 
-			return serviceConfigurationScanner.Scan((IEnumerable<Assembly>) assemblies);
+			return serviceConfigurationScanner.Scan((IEnumerable<Assembly>)assemblies);
 		}
 
 		public static IEnumerable<IServiceConfigurationMapping> Scan(this IServiceConfigurationScanner serviceConfigurationScanner, Type type)
