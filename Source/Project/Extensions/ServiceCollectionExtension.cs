@@ -13,6 +13,46 @@ namespace RegionOrebroLan.DependencyInjection.Extensions
 	{
 		#region Methods
 
+		public static IEnumerable<Assembly> GetAssemblies(IEnumerable<string> regexPatterns)
+		{
+			regexPatterns = (regexPatterns ?? Enumerable.Empty<string>()).ToArray();
+
+			const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
+
+			if(DependencyContext.Default == null)
+			{
+				var assemblies = new HashSet<Assembly>();
+				var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+				foreach(var regexPattern in regexPatterns)
+				{
+					foreach(var assembly in loadedAssemblies)
+					{
+						if(assemblies.Contains(assembly))
+							continue;
+
+						if(Regex.IsMatch(assembly.GetName().Name, regexPattern, regexOptions))
+							assemblies.Add(assembly);
+					}
+				}
+
+				return assemblies;
+			}
+
+			var libraryNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			foreach(var regexPattern in regexPatterns)
+			{
+				foreach(var library in DependencyContext.Default.RuntimeLibraries)
+				{
+					if(Regex.IsMatch(library.Name, regexPattern, regexOptions))
+						libraryNames.Add(library.Name);
+				}
+			}
+
+			return libraryNames.Select(Assembly.Load);
+		}
+
 		public static IServiceCollection ScanDependencies(this IServiceCollection services, bool force)
 		{
 			return services.ScanDependencies(force, Array.Empty<string>());
@@ -47,22 +87,9 @@ namespace RegionOrebroLan.DependencyInjection.Extensions
 			if(!patterns.Any())
 				patterns = new[] {"RegionOrebroLan", "RegionOrebroLan.*"};
 
-			var libraryNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
 			var regexPatterns = patterns.Select(pattern => "^" + Regex.Escape(pattern).Replace("\\*", ".*") + "$");
 
-			foreach(var regexPattern in regexPatterns)
-			{
-				foreach(var library in DependencyContext.Default.RuntimeLibraries)
-				{
-					if(Regex.IsMatch(library.Name, regexPattern, regexOptions))
-						libraryNames.Add(library.Name);
-				}
-			}
-
-			var assemblies = libraryNames.Select(Assembly.Load);
-
-			foreach(var mapping in scanner.Scan(assemblies))
+			foreach(var mapping in scanner.Scan(GetAssemblies(regexPatterns)))
 			{
 				var serviceDescriptor = new ServiceDescriptor(mapping.Configuration.ServiceType, mapping.Type, mapping.Configuration.Lifetime);
 
