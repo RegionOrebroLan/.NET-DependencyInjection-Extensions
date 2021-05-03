@@ -53,6 +53,36 @@ namespace RegionOrebroLan.DependencyInjection.Extensions
 			return libraryNames.Select(Assembly.Load);
 		}
 
+		public static int Remove<TServiceType>(this IServiceCollection services)
+		{
+			return services.Remove(typeof(TServiceType));
+		}
+
+		public static int Remove(this IServiceCollection services, params Type[] serviceTypes)
+		{
+			if(services == null)
+				throw new ArgumentNullException(nameof(services));
+
+			var removed = 0;
+			var serviceTypeSet = new HashSet<Type>(serviceTypes);
+
+			for(var i = services.Count - 1; i >= 0; i--)
+			{
+				var serviceType = services[i]?.ServiceType;
+
+				if(serviceType == null)
+					continue;
+
+				if(!serviceTypeSet.Contains(serviceType))
+					continue;
+
+				services.RemoveAt(i);
+				removed++;
+			}
+
+			return removed;
+		}
+
 		public static IServiceCollection ScanDependencies(this IServiceCollection services, bool force)
 		{
 			return services.ScanDependencies(force, Array.Empty<string>());

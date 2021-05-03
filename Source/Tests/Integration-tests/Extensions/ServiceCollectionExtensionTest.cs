@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -10,6 +11,35 @@ namespace IntegrationTests.Extensions
 	public class ServiceCollectionExtensionTest
 	{
 		#region Methods
+
+		[TestMethod]
+		public async Task Remove_Test()
+		{
+			await Task.CompletedTask;
+
+			var services = new ServiceCollection();
+			services.AddScoped<FirstAssembly.IFirst, FirstAssembly.First>();
+			services.AddScoped<FirstAssembly.IFirst, FirstAssembly.First>();
+			services.AddScoped<FirstAssembly.IFirst, FirstAssembly.First>();
+			services.AddSingleton<FirstAssembly.Second>();
+			services.AddSingleton<FirstAssembly.Third>();
+			services.AddTransient<TheSecond.Assembly.IFirst, TheSecond.Assembly.First>();
+			Assert.AreEqual(6, services.Count);
+
+			Assert.AreEqual(3, services.Remove<FirstAssembly.IFirst>());
+			Assert.AreEqual(3, services.Count);
+
+			Assert.AreEqual(1, services.Remove(typeof(FirstAssembly.Second)));
+			Assert.AreEqual(2, services.Count);
+
+			services.AddSingleton<FirstAssembly.Second>();
+			Assert.AreEqual(3, services.Count);
+			Assert.AreEqual(1, services.Remove(typeof(FirstAssembly.Second), typeof(FirstAssembly.Second), typeof(FirstAssembly.Second)));
+			Assert.AreEqual(2, services.Count);
+
+			Assert.AreEqual(2, services.Remove(typeof(FirstAssembly.Third), typeof(TheSecond.Assembly.IFirst)));
+			Assert.AreEqual(0, services.Count);
+		}
 
 		[TestMethod]
 		public void ScanDependencies_Force_Test()
